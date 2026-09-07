@@ -1,0 +1,8 @@
+prefix=/root/workspace/sebot-t710-competition/sebot_ros_kits/devel
+
+Name: hector_map_tools
+Description: Description of hector_map_tools
+Version: 0.4.1
+Cflags: -I/root/workspace/sebot-t710-competition/sebot_ros_kits/src/sebot_slam/slam_hector/hector_map_tools/include -I/usr/include/eigen3
+Libs: -L${prefix}/lib 
+Requires: nav_msgs

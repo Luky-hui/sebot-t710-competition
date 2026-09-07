@@ -1,0 +1,2 @@
+sebot_stdr/stdr_amcl:sebot_stdr/stdr_gui:sebot_stdr/stdr_hector_mapping:sebot_stdr/stdr_launchers:sebot_stdr/stdr_move_base:sebot_stdr/stdr_msgs:sebot_stdr/stdr_navigation:sebot_stdr/stdr_parser:sebot_stdr/stdr_resources:sebot_stdr/stdr_robot:sebot_stdr/stdr_samples:sebot_stdr/stdr_server:sebot_stdr/stdr_simulator
+-DCATKIN_DEVEL_PREFIX=/root/workspace/sebot-t710-competition/sebot_ros_stdr/devel -DCMAKE_INSTALL_PREFIX=/root/workspace/sebot-t710-competition/sebot_ros_stdr/install -G Unix Makefiles

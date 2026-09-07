@@ -1,0 +1,8 @@
+prefix=/root/workspace/sebot-t710-competition/sebot_factory/devel
+
+Name: sebot_factory
+Description: Description of sebot_factory
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: roscpp std_msgs geometry_msgs actionlib actionlib_msgs

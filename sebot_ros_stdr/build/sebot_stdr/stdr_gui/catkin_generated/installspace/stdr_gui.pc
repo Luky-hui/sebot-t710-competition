@@ -1,0 +1,8 @@
+prefix=/root/workspace/sebot-t710-competition/sebot_ros_stdr/install
+
+Name: stdr_gui
+Description: Description of stdr_gui
+Version: 0.3.2
+Cflags: 
+Libs: -L${prefix}/lib /usr/lib/aarch64-linux-gnu/libQtUiTools.a /usr/lib/aarch64-linux-gnu/libQtGui.so /usr/lib/aarch64-linux-gnu/libQtCore.so
+Requires: roscpp roslib tf stdr_msgs stdr_server stdr_robot stdr_parser sensor_msgs nav_msgs

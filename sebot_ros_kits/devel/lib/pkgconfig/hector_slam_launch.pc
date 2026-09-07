@@ -1,0 +1,8 @@
+prefix=/root/workspace/sebot-t710-competition/sebot_ros_kits/devel
+
+Name: hector_slam_launch
+Description: Description of hector_slam_launch
+Version: 0.4.1
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

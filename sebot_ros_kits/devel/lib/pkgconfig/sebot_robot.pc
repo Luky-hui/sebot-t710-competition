@@ -1,0 +1,8 @@
+prefix=/root/workspace/sebot-t710-competition/sebot_ros_kits/devel
+
+Name: sebot_robot
+Description: Description of sebot_robot
+Version: 0.0.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: roscpp std_msgs tf geometry_msgs

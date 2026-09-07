@@ -1,0 +1,7 @@
+<launch>
+  <!-- 引用启动激光雷达结点的launch文件 -->
+  <include file="$(find rplidar_ros)/launch/rplidar.launch" />
+
+  <!-- 读取监视器的配置文件 -->
+   <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rplidar_ros)/rviz/rplidar.rviz" />
+</launch>

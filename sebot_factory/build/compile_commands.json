@@ -1,0 +1,22 @@
+[
+{
+  "directory": "/root/workspace/sebot-t710-competition/sebot_factory/build/sebot_factory",
+  "command": "/usr/bin/c++ -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\\\"sebot_factory\\\" -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx -I/opt/ros/melodic/include -I/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/root/workspace/sebot-t710-competition/sebot_factory/src/sebot_factory/src -I/root/workspace/sebot-t710-competition/sebot_factory/src/sebot_factory/include -isystem /usr/local/include/opencv -std=c++11  -std=gnu++14 -o CMakeFiles/sebot_factory.dir/src/factory.cpp.o -c /root/workspace/sebot-t710-competition/sebot_factory/src/sebot_factory/src/factory.cpp",
+  "file": "/root/workspace/sebot-t710-competition/sebot_factory/src/sebot_factory/src/factory.cpp"
+},
+{
+  "directory": "/root/workspace/sebot-t710-competition/sebot_factory/build/sebot_factory",
+  "command": "/usr/bin/c++ -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\\\"sebot_factory\\\" -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx -I/opt/ros/melodic/include -I/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/root/workspace/sebot-t710-competition/sebot_factory/src/sebot_factory/src -I/root/workspace/sebot-t710-competition/sebot_factory/src/sebot_factory/include -isystem /usr/local/include/opencv -std=c++11  -std=gnu++14 -o CMakeFiles/sebot_yolo.dir/unit/yolo.cpp.o -c /root/workspace/sebot-t710-competition/sebot_factory/src/sebot_factory/unit/yolo.cpp",
+  "file": "/root/workspace/sebot-t710-competition/sebot_factory/src/sebot_factory/unit/yolo.cpp"
+},
+{
+  "directory": "/root/workspace/sebot-t710-competition/sebot_factory/build/sebot_factory",
+  "command": "/usr/bin/c++ -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\\\"sebot_factory\\\" -I/usr/local/include/libserial -I/usr/local/include/ppnc -I/usr/local/include/onnx -I/opt/ros/melodic/include -I/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/root/workspace/sebot-t710-competition/sebot_factory/src/sebot_factory/src -I/root/workspace/sebot-t710-competition/sebot_factory/src/sebot_factory/include -isystem /usr/local/include/opencv -std=c++11  -std=gnu++14 -o CMakeFiles/sebot_summary.dir/unit/pay.cpp.o -c /root/workspace/sebot-t710-competition/sebot_factory/src/sebot_factory/unit/pay.cpp",
+  "file": "/root/workspace/sebot-t710-competition/sebot_factory/src/sebot_factory/unit/pay.cpp"
+},
+{
+  "directory": "/root/workspace/sebot-t710-competition/sebot_factory/build/sebot_factory",
+  "command": "/usr/bin/c++ -DROSCONSOLE_BACKEND_LOG4CXX -DROS_BUILD_SHARED_LIBS=1 -DROS_PACKAGE_NAME=\\\"sebot_factory\\\" -I/usr/local/include/libserial -I/usr/local/include/opencv -I/usr/local/include/ppnc -I/usr/local/include/onnx -I/opt/ros/melodic/include -I/opt/ros/melodic/share/xmlrpcpp/cmake/../../../include/xmlrpcpp -I/root/workspace/sebot-t710-competition/sebot_factory/src/sebot_factory/src -I/root/workspace/sebot-t710-competition/sebot_factory/src/sebot_factory/include -std=c++11  -std=gnu++14 -o CMakeFiles/sebot_arm.dir/unit/arm.cpp.o -c /root/workspace/sebot-t710-competition/sebot_factory/src/sebot_factory/unit/arm.cpp",
+  "file": "/root/workspace/sebot-t710-competition/sebot_factory/src/sebot_factory/unit/arm.cpp"
+}
+]

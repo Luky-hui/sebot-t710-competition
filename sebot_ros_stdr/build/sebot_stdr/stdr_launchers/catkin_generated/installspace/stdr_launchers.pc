@@ -1,0 +1,8 @@
+prefix=/root/workspace/sebot-t710-competition/sebot_ros_stdr/install
+
+Name: stdr_launchers
+Description: Description of stdr_launchers
+Version: 0.3.2
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

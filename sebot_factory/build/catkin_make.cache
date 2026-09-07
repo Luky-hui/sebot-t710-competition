@@ -1,0 +1,2 @@
+sebot_factory:sebot_marking
+-DCATKIN_DEVEL_PREFIX=/root/workspace/sebot-t710-competition/sebot_factory/devel -DCMAKE_INSTALL_PREFIX=/root/workspace/sebot-t710-competition/sebot_factory/install -G Unix Makefiles

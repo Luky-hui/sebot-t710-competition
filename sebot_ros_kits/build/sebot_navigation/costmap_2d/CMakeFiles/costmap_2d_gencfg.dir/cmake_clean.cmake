@@ -1,0 +1,33 @@
+file(REMOVE_RECURSE
+  "/root/workspace/sebot-t710-competition/sebot_ros_kits/devel/include/costmap_2d/Costmap2DConfig.h"
+  "/root/workspace/sebot-t710-competition/sebot_ros_kits/devel/include/costmap_2d/GenericPluginConfig.h"
+  "/root/workspace/sebot-t710-competition/sebot_ros_kits/devel/include/costmap_2d/InflationPluginConfig.h"
+  "/root/workspace/sebot-t710-competition/sebot_ros_kits/devel/include/costmap_2d/ObstaclePluginConfig.h"
+  "/root/workspace/sebot-t710-competition/sebot_ros_kits/devel/include/costmap_2d/VoxelPluginConfig.h"
+  "/root/workspace/sebot-t710-competition/sebot_ros_kits/devel/lib/python2.7/dist-packages/costmap_2d/cfg/Costmap2DConfig.py"
+  "/root/workspace/sebot-t710-competition/sebot_ros_kits/devel/lib/python2.7/dist-packages/costmap_2d/cfg/GenericPluginConfig.py"
+  "/root/workspace/sebot-t710-competition/sebot_ros_kits/devel/lib/python2.7/dist-packages/costmap_2d/cfg/InflationPluginConfig.py"
+  "/root/workspace/sebot-t710-competition/sebot_ros_kits/devel/lib/python2.7/dist-packages/costmap_2d/cfg/ObstaclePluginConfig.py"
+  "/root/workspace/sebot-t710-competition/sebot_ros_kits/devel/lib/python2.7/dist-packages/costmap_2d/cfg/VoxelPluginConfig.py"
+  "/root/workspace/sebot-t710-competition/sebot_ros_kits/devel/share/costmap_2d/docs/Costmap2DConfig-usage.dox"
+  "/root/workspace/sebot-t710-competition/sebot_ros_kits/devel/share/costmap_2d/docs/Costmap2DConfig.dox"
+  "/root/workspace/sebot-t710-competition/sebot_ros_kits/devel/share/costmap_2d/docs/Costmap2DConfig.wikidoc"
+  "/root/workspace/sebot-t710-competition/sebot_ros_kits/devel/share/costmap_2d/docs/GenericPluginConfig-usage.dox"
+  "/root/workspace/sebot-t710-competition/sebot_ros_kits/devel/share/costmap_2d/docs/GenericPluginConfig.dox"
+  "/root/workspace/sebot-t710-competition/sebot_ros_kits/devel/share/costmap_2d/docs/GenericPluginConfig.wikidoc"
+  "/root/workspace/sebot-t710-competition/sebot_ros_kits/devel/share/costmap_2d/docs/InflationPluginConfig-usage.dox"
+  "/root/workspace/sebot-t710-competition/sebot_ros_kits/devel/share/costmap_2d/docs/InflationPluginConfig.dox"
+  "/root/workspace/sebot-t710-competition/sebot_ros_kits/devel/share/costmap_2d/docs/InflationPluginConfig.wikidoc"
+  "/root/workspace/sebot-t710-competition/sebot_ros_kits/devel/share/costmap_2d/docs/ObstaclePluginConfig-usage.dox"
+  "/root/workspace/sebot-t710-competition/sebot_ros_kits/devel/share/costmap_2d/docs/ObstaclePluginConfig.dox"
+  "/root/workspace/sebot-t710-competition/sebot_ros_kits/devel/share/costmap_2d/docs/ObstaclePluginConfig.wikidoc"
+  "/root/workspace/sebot-t710-competition/sebot_ros_kits/devel/share/costmap_2d/docs/VoxelPluginConfig-usage.dox"
+  "/root/workspace/sebot-t710-competition/sebot_ros_kits/devel/share/costmap_2d/docs/VoxelPluginConfig.dox"
+  "/root/workspace/sebot-t710-competition/sebot_ros_kits/devel/share/costmap_2d/docs/VoxelPluginConfig.wikidoc"
+  "CMakeFiles/costmap_2d_gencfg"
+)
+
+# Per-language clean rules from dependency scanning.
+foreach(lang )
+  include(CMakeFiles/costmap_2d_gencfg.dir/cmake_clean_${lang}.cmake OPTIONAL)
+endforeach()

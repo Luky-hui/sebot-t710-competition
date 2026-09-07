@@ -1,0 +1,2 @@
+set(hector_mapping_MESSAGE_FILES "/root/workspace/sebot-t710-competition/sebot_ros_kits/src/sebot_slam/slam_hector/hector_mapping/msg/HectorDebugInfo.msg;/root/workspace/sebot-t710-competition/sebot_ros_kits/src/sebot_slam/slam_hector/hector_mapping/msg/HectorIterData.msg")
+set(hector_mapping_SERVICE_FILES "/root/workspace/sebot-t710-competition/sebot_ros_kits/src/sebot_slam/slam_hector/hector_mapping/srv/ResetMapping.srv")

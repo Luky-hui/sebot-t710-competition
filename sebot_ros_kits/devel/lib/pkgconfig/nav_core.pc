@@ -1,0 +1,8 @@
+prefix=/root/workspace/sebot-t710-competition/sebot_ros_kits/devel
+
+Name: nav_core
+Description: Description of nav_core
+Version: 1.16.7
+Cflags: -I/root/workspace/sebot-t710-competition/sebot_ros_kits/src/sebot_navigation/nav_core/include
+Libs: -L${prefix}/lib 
+Requires: std_msgs geometry_msgs tf2_ros costmap_2d

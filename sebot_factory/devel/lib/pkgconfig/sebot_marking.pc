@@ -1,0 +1,8 @@
+prefix=/root/workspace/sebot-t710-competition/sebot_factory/devel
+
+Name: sebot_marking
+Description: Description of sebot_marking
+Version: 0.1.0
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 

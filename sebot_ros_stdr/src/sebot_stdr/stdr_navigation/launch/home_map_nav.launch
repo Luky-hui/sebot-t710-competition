@@ -1,0 +1,18 @@
+<!--
+  Description:
+    STDR simulator robot auto navigation with amcl and move base packages.
+    load home_map to test.
+-->
+<launch>
+  <!-- load stdr simulator with robot0 -->
+  <include file="$(find stdr_launchers)/launch/server_with_map_and_gui_plus_robot.launch" />
+
+  <!-- startup move_base node -->
+  <include file="$(find stdr_move_base)/launch/stdr_move_base.launch" />
+
+  <!-- load home map -->
+  <include file="$(find stdr_navigation)/launch/load_home_map.launch" />
+
+  <!-- startup amcl node -->
+  <include file="$(find stdr_amcl)/launch/home_map_amcl.launch" />
+</launch>

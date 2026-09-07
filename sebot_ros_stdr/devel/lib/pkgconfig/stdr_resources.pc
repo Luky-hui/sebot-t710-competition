@@ -1,0 +1,8 @@
+prefix=/root/workspace/sebot-t710-competition/sebot_ros_stdr/devel
+
+Name: stdr_resources
+Description: Description of stdr_resources
+Version: 0.3.2
+Cflags: 
+Libs: -L${prefix}/lib 
+Requires: 
