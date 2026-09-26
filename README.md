@@ -12,29 +12,6 @@
 
 演示视频：[https://www.bilibili.com/video/BV1tzgR6hEmd/](https://www.bilibili.com/video/BV1tzgR6hEmd/)
 
-## 源码阅读依据
-
-本 README 按当前源码重写，重点阅读了以下文件：
-
-```text
-sebot_factory/src/sebot_factory/src/factory.cpp
-sebot_factory/src/sebot_factory/src/confirm.cpp
-sebot_factory/src/sebot_factory/src/picking.cpp
-sebot_factory/src/sebot_factory/src/summary.cpp
-sebot_factory/src/sebot_factory/include/detection.hpp
-sebot_factory/src/sebot_factory/include/arm.hpp
-sebot_factory/src/sebot_factory/include/tools.hpp
-sebot_factory/src/sebot_factory/include/camera.hpp
-sebot_factory/src/sebot_factory/CMakeLists.txt
-sebot_factory/src/sebot_factory/launch/*.launch
-sebot_ros_kits/src/sebot_robot/src/controller.cpp
-sebot_ros_kits/src/sebot_robot/src/transform.cpp
-sebot_ros_kits/src/sebot_slam/sebot_slam/src/auto_slam.cpp
-sebot_ros_kits/src/sebot_slam/sebot_slam/src/frontier_search.cpp
-sebot_ros_kits/src/sebot_navigation/sebot_navigation/src/multinavi.cpp
-sebot_ros_kits/src/sebot_speech/scripts/sebot_audio.py
-```
-
 ## 工作空间结构
 
 ```text
