@@ -20,7 +20,7 @@ https://www.bilibili.com/video/BV1tzgR6hEmd/
 
 ## 📖 项目简介
 
-本项目基于 **SEBOT T710 服务机器人平台** 开发，围绕智能工厂中的自主移动操作任务，将：
+本项将：
 
 ```text
 环境感知
@@ -44,8 +44,8 @@ https://www.bilibili.com/video/BV1tzgR6hEmd/
 
 系统主要由三部分组成：
 
-- `sebot_factory`：比赛任务状态机、订单识别、抓取、放置与结算
-- `sebot_ros_kits`：真实机器人底盘、导航、SLAM、传感器与驱动
+- `sebot_factory`：任务状态机、订单识别、抓取、放置与结算
+- `sebot_ros_kits`：机器人底盘、导航、SLAM、传感器与驱动
 - `sebot_ros_stdr`：STDR 仿真与导航测试
 
 ---
