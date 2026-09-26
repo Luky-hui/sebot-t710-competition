@@ -1,514 +1,391 @@
-# sebot-t710-competition
+# 🤖 SEBOT T710 Intelligent Service Robot
 
-![ROS](https://img.shields.io/badge/ROS-1-22314E?style=flat-square&logo=ros)
-![C++](https://img.shields.io/badge/C++-14-00599C?style=flat-square&logo=cplusplus)
-![Python](https://img.shields.io/badge/Python-3.x-3776AB?style=flat-square&logo=python)
-![OpenCV](https://img.shields.io/badge/OpenCV-enabled-5C3EE8?style=flat-square&logo=opencv)
-![PaddlePaddle](https://img.shields.io/badge/PaddlePaddle-EdgeBoard-0062B1?style=flat-square)
+> 面向 2026 第二十八届中国机器人及人工智能大赛（CRAIC）百度智能云智能服务机器人赛的 ROS 1 自主服务机器人系统，实现自主探索建图、定位导航、订单识别、零件识别、机械臂抓取配送与最终物料清单展示。
 
-2026 第二十八届中国机器人及人工智能大赛（CRAIC）百度智能云智能服务机器人赛参赛项目源码。
+<p align="left">
+  <img src="https://img.shields.io/badge/ROS-1-22314E?logo=ros" />
+  <img src="https://img.shields.io/badge/C++-14-00599C?logo=cplusplus" />
+  <img src="https://img.shields.io/badge/Python-3.x-3776AB?logo=python" />
+  <img src="https://img.shields.io/badge/OpenCV-Vision-5C3EE8?logo=opencv" />
+  <img src="https://img.shields.io/badge/PaddlePaddle-EdgeBoard-0062B1" />
+</p>
 
-本仓库是一套 ROS 1 服务机器人比赛工程，代码覆盖真实机器人底盘、激光雷达、里程计/IMU 融合、SLAM 建图、AMCL 定位、`move_base` 导航、订单视觉识别、零件视觉识别、机械臂串口控制、抓取/放置流程和最终物料清单展示。比赛主流程由 `sebot_factory` 状态机调度，真实机器人能力由 `sebot_ros_kits` 提供，STDR 仿真能力由 `sebot_ros_stdr` 提供。
+## 🎬 项目演示
 
-演示视频：[https://www.bilibili.com/video/BV1tzgR6hEmd/](https://www.bilibili.com/video/BV1tzgR6hEmd/)
+[![Bilibili](https://img.shields.io/badge/Bilibili-观看完整演示-00A1D6?logo=bilibili&logoColor=white)](https://www.bilibili.com/video/BV1tzgR6hEmd/)
 
-## 工作空间结构
+▶ **演示视频：**  
+https://www.bilibili.com/video/BV1tzgR6hEmd/
 
-```text
-sebot-t710-competition/
-├── sebot_factory/                 # 比赛任务工作空间
-│   └── src/
-│       ├── sebot_factory/         # 智能工厂任务主包
-│       └── sebot_marking/         # Qt/RViz 辅助界面
-├── sebot_ros_kits/                # 真实机器人 ROS 套件工作空间
-│   └── src/
-│       ├── sebot_driver/          # RPLIDAR、URDF、MoveIt、robot_pose_ekf
-│       ├── sebot_navigation/      # AMCL、move_base、costmap、地图和导航参数
-│       ├── sebot_robot/           # 底盘串口、cmd_vel、odom、imu、TF、键盘/手柄控制
-│       ├── sebot_slam/            # gmapping、hector、自主探索建图
-│       ├── sebot_speech/          # /audio 话题播报
-│       └── sebot_visions/         # 图像采集辅助脚本
-└── sebot_ros_stdr/                # STDR 仿真工作空间
-    └── src/
-        └── sebot_stdr/            # STDR server、GUI、AMCL、move_base、导航巡航
-```
+---
 
-三个一级目录都是 catkin 工作空间，目录中保留 `src/`、`build/`、`devel/` 和 `.catkin_workspace`。
+## 📖 项目简介
 
-## 总体任务流程
-
-### 1. 自主建图
-
-`sebot_auto_gmapping.launch` 启动以下链路：
+本项目基于 **SEBOT T710 服务机器人平台** 开发，围绕智能工厂中的自主移动操作任务，将：
 
 ```text
-sebot_controller -> rplidar_ros -> robot_pose_ekf -> sebot_transform
--> gmapping -> move_base -> auto_slam -> rviz -> sebot_audio
+环境感知
+   ↓
+自主建图
+   ↓
+定位导航
+   ↓
+订单识别
+   ↓
+零件识别
+   ↓
+机械臂抓取
+   ↓
+物料配送
+   ↓
+结果汇总
 ```
 
-`auto_slam.cpp` 使用 `FrontierSearch` 在 costmap 中搜索未知边界，将边界质心作为 `move_base` 目标点；目标无法推进时加入黑名单；没有可探索边界后执行完成逻辑并触发返航。
+串联成一套完整的 ROS 自主任务系统。
 
-启动：
+系统主要由三部分组成：
 
-```bash
-cd sebot_ros_kits
-source devel/setup.bash
-roslaunch sebot_slam sebot_auto_gmapping.launch
-```
+- `sebot_factory`：比赛任务状态机、订单识别、抓取、放置与结算
+- `sebot_ros_kits`：真实机器人底盘、导航、SLAM、传感器与驱动
+- `sebot_ros_stdr`：STDR 仿真与导航测试
 
-保存地图：
+---
 
-```bash
-roslaunch sebot_slam sebot_map_save.launch
-```
+## 🗺️ 任务流程
 
-保存路径由源码指定为：
+### 1. 自主探索建图
+
+机器人从起始区域出发，通过激光雷达感知环境，并基于 Frontier 自动寻找尚未探索的区域。
 
 ```text
-sebot_ros_kits/src/sebot_navigation/sebot_navigation/map/map
+启动机器人
+   ↓
+激光雷达扫描
+   ↓
+Odometry + IMU 融合
+   ↓
+GMapping SLAM
+   ↓
+Frontier Search
+   ↓
+Move Base 自主探索
+   ↓
+探索完成
+   ↓
+返回起始区
+   ↓
+保存地图
 ```
 
-### 2. 自主配送
+自主探索节点会搜索已知自由区域与未知区域之间的 Frontier，并将合适的边界区域作为下一导航目标。
 
-`sebot_factory/src/sebot_factory/src/factory.cpp` 是比赛主状态机，流程如下：
+如果某个目标长时间无法到达，会加入黑名单，避免机器人反复尝试同一失败位置。
+
+---
+
+### 2. 自主配送服务
+
+地图建立完成后，系统切换到自主配送模式：
 
 ```text
-FACTORY_STEP_START
--> FACTORY_STEP_INIT
--> FACTORY_STEP_DELIVERY
--> FACTORY_STEP_SUMMARY
+AMCL 初始定位
+   ↓
+前往工作台
+   ↓
+识别订单
+   ↓
+确认所需零件
+   ↓
+导航至取件台
+   ↓
+搜索目标零件
+   ↓
+机械臂抓取
+   ↓
+返回对应工作台
+   ↓
+放置零件
+   ↓
+处理下一零件 / 下一工作台
+   ↓
+前往结算区
+   ↓
+显示物料清单
 ```
 
-主流程展开后是：
+整个流程由 `Factory` 状态机自动调度。
+
+---
+
+## 🧠 系统架构
 
 ```text
-播报开始
--> 发布 /initialpose 完成起始点重定位
--> 导航到工作台
--> Confirm 识别订单
--> 导航到取件台
--> Picking 抓取零件
--> 清理 /move_base/clear_costmaps
--> 在取件台位置再次发布 /initialpose
--> 返回工作台
--> Picking 放置零件
--> 处理下一个零件或下一个工作台
--> 导航到结算区
--> Summary 显示物料清单
--> 机械臂复位并失能
+                 ┌────────────────────┐
+                 │   Factory 状态机    │
+                 └─────────┬──────────┘
+                           │
+          ┌────────────────┼────────────────┐
+          ↓                ↓                ↓
+      Navigation        Vision         Manipulation
+          │                │                │
+      AMCL /          EdgeBoard         Talon Arm
+     move_base        Paddle AI        Gripper
+          │                │                │
+          └────────────────┼────────────────┘
+                           ↓
+                    SEBOT T710 Robot
+                           ↓
+        ┌──────────────────┼──────────────────┐
+        ↓                  ↓                  ↓
+     RPLIDAR            Camera           Odom / IMU
 ```
 
-启动：
+---
 
-```bash
-source sebot_ros_kits/devel/setup.bash
-source sebot_factory/devel/setup.bash
-roslaunch sebot_factory sebot_factory.launch
-```
+## ✨ 核心功能
 
-## 比赛主包 sebot_factory
-
-### 已启用编译目标
-
-当前 `sebot_factory/src/sebot_factory/CMakeLists.txt` 已启用以下目标：
-
-| 目标 | 源码 | 说明 |
-| --- | --- | --- |
-| `sebot_factory` | `src/factory.cpp` | 完整智能工厂任务 |
-| `sebot_yolo` | `unit/yolo.cpp` | AI 目标检测调试 |
-| `sebot_summary` | `unit/pay.cpp` | 结算画面调试 |
-| `sebot_arm` | `unit/arm.cpp` | 机械臂串口动作调试 |
-
-当前 `CMakeLists.txt` 中 `sebot_confirm` 与 `sebot_picking` 目标处于注释状态；`sebot_ordering.launch` 与 `sebot_picking.launch` 引用了这两个节点，若要单独运行这两个 launch，需要先在 `CMakeLists.txt` 中启用对应目标并重新编译。
-
-### 主状态机
-
-`Factory` 类维护：
-
-- `Location`：工作台、取件台、起始点、结算区
-- `Table`：工作台点位、订单列表、已确认标志、待放置标志、放置计数
-- `Navigation`：`move_base` 到达状态、超时状态、AMCL 位姿、当前导航点类型
-- `ordersSummary`：最终交给 `Summary` 的工作台订单数据
-
-点位从下面文件读取：
-
-```text
-sebot_factory/src/sebot_factory/res/location.xml
-```
-
-当前点位包含：
-
-```text
-工作台-1
-工作台-2
-工作台-3
-工作台-4
-取件台
-起始点
-结算区
-```
-
-`location.xml` 中的 `position` 与 `orientation` 会被转换为 `move_base_msgs::MoveBaseGoal`，坐标系写入为 `map`。
-
-### 取件台目标点修正
-
-`factory.cpp` 在前往取件台时不会直接复用固定点位，而是按当前工作台和当前零件调整 `servingGoal`：
-
-| 条件 | 修正 |
+| 模块 | 功能 |
 | --- | --- |
-| `tableId == 2` 且零件为 `LABEL_AI_SCREW` | `x -= 0.20` |
-| `tableId == 4` 且 `partPlace == 2` 且零件为 `LABEL_AI_BLOCK` | `x += 0.70`，`y += 0.10` |
-| 零件为 `LABEL_AI_TAPE` | `x += 0.80` |
-| 零件为 `LABEL_AI_PCB` | `x += 0.20` |
-| 零件为 `LABEL_AI_NUT` | `x -= 0.10` |
+| 自主建图 | GMapping + Frontier Search 自动探索 |
+| 定位导航 | AMCL + Move Base |
+| 路径规划 | 全局 / 局部规划与动态避障 |
+| 订单识别 | 工作台订单牌及零件类别检测 |
+| 零件识别 | Nut / Screw / PCB / Block / Tape |
+| 多帧确认 | 多次视觉采样过滤偶发误检 |
+| 底盘精定位 | 激光距离 + 图像位置 PID 调整 |
+| 机械臂对准 | ArUco / 颜色区域辅助视觉定位 |
+| 抓取与放置 | 机械臂伸展、夹取、抬升、收缩与放置 |
+| 多任务调度 | 多工作台、多零件连续配送 |
+| 结果汇总 | 自动生成最终物料清单 |
+| 语音播报 | ROS `/audio` 任务状态提示 |
 
-这些修正写在 `Factory::naviToWorkStation(StationNavi::STATION_SERVING)` 中。
+---
 
-## 订单确认 Confirm
+## 👁️ 订单与零件识别
 
-源码位置：
+视觉模块基于 EdgeBoard AI 推理框架实现。
+
+主要流程：
 
 ```text
-sebot_factory/src/sebot_factory/src/confirm.cpp
+Camera Image
+    ↓
+Resize 320×320
+    ↓
+RGB / Normalize
+    ↓
+Paddle EdgeBoard NNA
+    ↓
+ONNX Post Processing
+    ↓
+NMS
+    ↓
+Detection Results
 ```
 
-`Confirm` 类负责到达工作台后的订单识别，状态机如下：
+当前识别类别：
 
 ```text
-CONFIRM_STEP_START
--> CONFIRM_STEP_POSE
--> CONFIRM_STEP_PART
--> CONFIRM_STEP_END
-```
-
-核心逻辑：
-
-- 订阅 `/scan`，从机器人前方左右两侧提取激光距离。
-- 发布 `/cmd_vel`，用 PID 调整机器人与订单牌的距离、朝向和横向位置。
-- 使用 `Detection` 对相机图像执行推理。
-- 先定位 `order` 订单牌，再只统计订单牌框内的零件。
-- 多帧采样，零件出现次数达到源码阈值后进入最终订单。
-- 最终订单按目标框 Y 轴中心从上到下排序，写入 `orders`。
-
-识别标签由 `tools.hpp` 定义：
-
-```text
-LABEL_AI_NUT    -> nut
-LABEL_AI_SCREW  -> screw
-LABEL_AI_PCB    -> pcb
-LABEL_AI_BLOCK  -> block
-LABEL_AI_TAPE   -> tape
-LABEL_AI_ORDER  -> order
-```
-
-## 取件与放置 Picking
-
-源码位置：
-
-```text
-sebot_factory/src/sebot_factory/src/picking.cpp
-```
-
-`Picking` 类负责取件台抓取和工作台放置，状态机如下：
-
-```text
-PICK_STEP_START
--> PICK_STEP_POSE
--> PICK_STEP_SEARCH
--> PICK_STEP_FORWARD
--> PICK_STEP_AIM
--> PICK_STEP_GRAB
--> PICK_STEP_LOCAL
--> PICK_STEP_END
-```
-
-### 抓取流程
-
-`pickupSomething(part)` 的主要动作：
-
-```text
-到达取件台后短距离前进
--> 深度相机画面中搜索目标零件
--> 通过 /scan 和 /cmd_vel 做距离/姿态/横向校正
--> 机械臂执行 ACTION_EXT 伸展
--> 切换机械臂 RGB 相机
--> 初始化机械爪
--> RGB 相机检测 ArUco，未检测到 ArUco 时搜索蓝色区域
--> 机械爪 PD 跟随目标
--> 底盘缓慢推进到 disClaw
--> 机械爪夹取
--> 机械爪抬升
--> 机械臂执行 ACTION_CUR 收缩
--> 底盘后退到适合导航距离
-```
-
-### 放置流程
-
-`putdownSomething(part)` 的主要动作：
-
-```text
-根据 disPick 调整工作台前距离
--> 机械臂执行 ACTION_PUT
--> 根据 placePart 选择中间/左侧/右侧偏移
--> 机械爪放开零件
--> 机械爪抬升
--> 底盘后退
--> 机械臂执行 ACTION_CUR 收缩
-```
-
-`placePart` 的含义：
-
-```text
-1 -> 中间
-2 -> 左侧
-3 -> 右侧
-```
-
-## AI 推理 Detection
-
-源码位置：
-
-```text
-sebot_factory/src/sebot_factory/include/detection.hpp
-```
-
-`Detection` 封装了 EdgeBoard 推理和 ONNX 后处理：
-
-```text
-OpenCV 读取图像
--> resize 到 320x320
--> RGB 转换与归一化
--> PPNCPredictor 执行 NNA 主体推理
--> ONNX Runtime 执行 post.onnx 后处理
--> PPNCPredictor 执行 NMS
--> 生成 PredictResult 列表
-```
-
-模型目录：
-
-```text
-sebot_factory/src/sebot_factory/res/model/
-```
-
-当前模型文件：
-
-```text
-config_ppncnna.json
-config_ppncnms.json
-deploy_paddle.params
-deploy_paddle.ro
-deploy_paddle.so
-deploy_paddle.tar
-devc.o
-io_paddle.json
-label_list.txt
-lib0.o
-nms.tar
-nms.tar.so
-post.onnx
-```
-
-当前标签文件 `label_list.txt` 内容：
-
-```text
-block
-nut
 order
-pcb
+nut
 screw
+pcb
+block
 tape
 ```
 
-## 机械臂 Talon
+订单识别阶段会首先检测 `order` 区域，再仅统计订单框内部的零件目标。
 
-源码位置：
+同时采用多帧采样机制，对检测结果进行出现次数统计和排序，减少单帧误识别对任务的影响。
 
-```text
-sebot_factory/src/sebot_factory/include/arm.hpp
-```
+---
 
-机械臂通过 `libserial` 打开串口：
+## 🎯 工作台精定位
 
-```text
-/dev/talon
-```
-
-串口参数：
+机器人通过 Move Base 到达工作台后，还会进行局部位置修正。
 
 ```text
-115200 baud
-8 data bits
-no parity
-1 stop bit
-no flow control
+激光左右距离差
+      ↓
+朝向 PID
+
+激光平均距离
+      ↓
+前后距离 PID
+
+订单牌图像位置
+      ↓
+横向位置 PID
 ```
 
-支持的动作：
+这样可以让机器人从“导航到工作台附近”进一步调整到适合视觉识别和机械操作的位置。
+
+---
+
+## 🦾 零件抓取
+
+抓取阶段采用“底盘粗定位 + 机械臂视觉精定位”的两级方式：
 
 ```text
-ACTION_RES -> 机械臂复位
-ACTION_EXT -> 机械臂伸展
-ACTION_CUR -> 机械臂收缩
-ACTION_PUT -> 机械臂放置
-ACTION_DIY -> 自定义动作
+导航至取件台
+      ↓
+AI 搜索目标零件
+      ↓
+底盘前后 / 横向 / 朝向调整
+      ↓
+机械臂伸展
+      ↓
+切换机械臂 RGB 相机
+      ↓
+ArUco / 颜色区域定位
+      ↓
+机械爪 PD 对准
+      ↓
+底盘低速靠近
+      ↓
+夹爪闭合
+      ↓
+抬升物料
+      ↓
+机械臂收缩
+      ↓
+底盘退出抓取区域
 ```
 
-支持的控制能力：
-
-- 所有关节使能/失能
-- 机械臂位姿控制
-- 单关节角度控制
-- 多关节角度控制
-- 机械爪运动控制
-- 机械爪初始化
-- 动作组执行反馈解析
-
-## 结算显示 Summary
-
-源码位置：
+机械臂通过 `/dev/talon` 串口控制，支持：
 
 ```text
-sebot_factory/src/sebot_factory/src/summary.cpp
+ACTION_RES  → 复位
+ACTION_EXT  → 伸展
+ACTION_CUR  → 收缩
+ACTION_PUT  → 放置
+ACTION_DIY  → 自定义动作
 ```
 
-`Summary` 接收 `vector<Order>`，根据订单数量选择显示方式：
+---
+
+## 📦 零件放置
+
+机器人返回对应工作台后，根据当前零件序号选择不同放置位置：
 
 ```text
-0 个订单 -> None.png
-1 个工作台 -> tableOne
-2 个工作台 -> tableTwo
-3 个工作台 -> tableThree
-超过 3 个工作台 -> tableMore 轮播
+第 1 个零件 → 中间
+第 2 个零件 → 左侧
+第 3 个零件 → 右侧
 ```
 
-零件编号映射：
+单次放置流程：
 
-| 标签 | 编号 |
+```text
+调整工作台距离
+   ↓
+机械臂伸展
+   ↓
+选择放置位置
+   ↓
+夹爪松开
+   ↓
+机械爪抬升
+   ↓
+底盘后退
+   ↓
+机械臂收缩
+```
+
+完成当前工作台所有零件后，系统自动切换到下一工作台。
+
+---
+
+## 🧾 最终物料清单
+
+所有配送任务完成后，机器人自动导航至结算区。
+
+系统根据任务过程中保存的订单数据生成最终清单。
+
+物料编号映射：
+
+| 零件 | 编号 |
 | --- | --- |
-| `screw` | `G111` |
-| `nut` | `G112` |
-| `pcb` | `G113` |
-| `block` | `G114` |
-| `tape` | `G115` |
+| Screw | G111 |
+| Nut | G112 |
+| PCB | G113 |
+| Block | G114 |
+| Tape | G115 |
 
-当前 `res/image/` 中存在：
+系统会根据工作台数量动态生成对应的结算界面。
 
-```text
-background.png
-block.png
-None.png
-nut.png
-pcb.png
-screw.png
-table.png
-tape.png
-```
+---
 
-`summary.cpp` 构造函数中读取了 `money.png` 与 `money(red).png`，当前 `res/image/` 中没有这两个文件；当前显示逻辑没有把这两个变量绘制到结果图中。
+## 🛠 技术栈
 
-## 真实机器人底盘与导航
+**机器人系统**
 
-### sebot_controller
+`Ubuntu` · `ROS 1` · `catkin` · `TF`
 
-源码位置：
+**导航与建图**
 
-```text
-sebot_ros_kits/src/sebot_robot/src/controller.cpp
-```
+`GMapping` · `Frontier Search` · `AMCL` · `move_base` · `robot_pose_ekf`
 
-底盘串口：
+**视觉**
 
-```text
-/dev/robot
-```
+`OpenCV` · `ArUco` · `PaddlePaddle EdgeBoard` · `ONNX Runtime`
 
-订阅：
+**机器人控制**
 
-```text
-cmd_vel
-```
+`RPLIDAR` · `Odometry` · `IMU` · `PID` · `libserial`
 
-按参数发布：
+**机械操作**
+
+`Talon Arm` · `Gripper Control` · `MoveIt`
+
+**开发**
+
+`C++14` · `Python 3`
+
+---
+
+## 📁 项目结构
 
 ```text
-odom
-imu
-msgUltraLF
-msgUltraMF
-msgUltraRF
-msgUltraMB
+sebot-t710-competition/
+│
+├── sebot_factory/
+│   └── src/
+│       ├── sebot_factory/
+│       │   ├── src/
+│       │   │   ├── factory.cpp
+│       │   │   ├── confirm.cpp
+│       │   │   ├── picking.cpp
+│       │   │   └── summary.cpp
+│       │   ├── include/
+│       │   ├── launch/
+│       │   ├── res/
+│       │   └── unit/
+│       │
+│       └── sebot_marking/
+│
+├── sebot_ros_kits/
+│   └── src/
+│       ├── sebot_driver/
+│       ├── sebot_navigation/
+│       ├── sebot_robot/
+│       ├── sebot_slam/
+│       ├── sebot_speech/
+│       └── sebot_visions/
+│
+├── sebot_ros_stdr/
+│   └── src/
+│       └── sebot_stdr/
+│
+├── .gitattributes
+└── README.md
 ```
 
-参数：
+---
 
-```text
-/sebot_controller/ultraEnale
-/sebot_controller/odomEnable
-/sebot_controller/imuEnable
-```
+## 🚀 快速开始
 
-### 静态 TF
-
-源码位置：
-
-```text
-sebot_ros_kits/src/sebot_robot/src/transform.cpp
-```
-
-发布以下坐标系：
-
-```text
-base_footprint -> imu
-base_footprint -> laser
-base_footprint -> camera
-base_footprint -> ultraLF
-base_footprint -> ultraMF
-base_footprint -> ultraRF
-base_footprint -> ultraMB
-```
-
-### RPLIDAR
-
-启动文件：
-
-```text
-sebot_ros_kits/src/sebot_driver/rplidar_ros/launch/rplidar.launch
-```
-
-设备与参数：
-
-```text
-serial_port: /dev/rplidar
-serial_baudrate: 115200
-frame_id: laser
-inverted: false
-angle_compensate: true
-```
-
-### robot_pose_ekf
-
-启动文件：
-
-```text
-sebot_ros_kits/src/sebot_driver/robot_pose_ekf/launch/robot_pose_ekf.launch
-```
-
-关键参数：
-
-```text
-output_frame: odom_combined
-base_footprint_frame: base_footprint
-freq: 30.0
-odom_used: true
-imu_used: true
-vo_used: false
-odom -> /odom
-imu_data -> /imu
-```
-
-## 常用启动命令
-
-### 编译真实机器人工作空间
+### 编译机器人工作空间
 
 ```bash
 cd sebot_ros_kits
@@ -524,6 +401,8 @@ catkin_make
 source devel/setup.bash
 ```
 
+---
+
 ### 启动自主建图
 
 ```bash
@@ -531,151 +410,116 @@ source sebot_ros_kits/devel/setup.bash
 roslaunch sebot_slam sebot_auto_gmapping.launch
 ```
 
-### 启动手柄建图
+保存地图：
 
 ```bash
-source sebot_ros_kits/devel/setup.bash
-roslaunch sebot_slam sebot_gmapping.launch
-```
-
-### 保存地图
-
-```bash
-source sebot_ros_kits/devel/setup.bash
 roslaunch sebot_slam sebot_map_save.launch
 ```
 
-### 启动导航
+---
 
-```bash
-source sebot_ros_kits/devel/setup.bash
-roslaunch sebot_navigation sebot_navigation.launch
-```
-
-### 启动多点导航
-
-```bash
-source sebot_ros_kits/devel/setup.bash
-roslaunch sebot_navigation sebot_multinavi.launch
-```
-
-`multinavi.cpp` 当前读取的 XML 路径为硬编码路径：
-
-```text
-/root/workspace/sebot-t710-competition/sebot_ros_kits/src/sebot_catering/res/location.xml
-```
-
-### 启动完整比赛任务
+### 启动完整配送任务
 
 ```bash
 source sebot_ros_kits/devel/setup.bash
 source sebot_factory/devel/setup.bash
+
 roslaunch sebot_factory sebot_factory.launch
 ```
 
-### AI 检测调试
+---
 
-```bash
-source sebot_factory/devel/setup.bash
-roslaunch sebot_factory sebot_yolo.launch
+## 🔄 主状态机
+
+完整任务由：
+
+```text
+FACTORY_STEP_START
+        ↓
+FACTORY_STEP_INIT
+        ↓
+FACTORY_STEP_DELIVERY
+        ↓
+FACTORY_STEP_SUMMARY
 ```
 
-### 结算界面调试
+组成。
 
-```bash
-source sebot_factory/devel/setup.bash
-roslaunch sebot_factory sebot_paying.launch
+配送过程中：
+
+```text
+工作台
+  ↓
+Confirm
+  ↓
+订单列表
+  ↓
+取件台
+  ↓
+Picking
+  ↓
+抓取零件
+  ↓
+返回工作台
+  ↓
+放置
+  ↓
+还有零件？
+ ├─ Yes → 继续配送
+ └─ No  → 下一工作台
 ```
 
-### 机械臂调试
+---
 
-```bash
-source sebot_factory/devel/setup.bash
-roslaunch sebot_factory sebot_arm.launch
-```
+## 🔌 主要设备
 
-## 设备与路径检查
-
-源码中直接使用或启动文件中配置了以下设备/路径：
-
-| 项目 | 源码值 |
+| 设备 | 接口 |
 | --- | --- |
-| 底盘串口 | `/dev/robot` |
-| 激光雷达串口 | `/dev/rplidar` |
-| 机械臂串口 | `/dev/talon` |
-| 深度相机默认回退路径 | `/dev/deepCamera` |
-| 机械臂 RGB 相机默认回退路径 | `/dev/rgbCamera` |
-| 语音资源硬编码根路径 | `/root/workspace/sebot-t710-competition/sebot_ros_kits/src/sebot_speech/res/audio/match/` |
-| 多点导航 XML 硬编码路径 | `/root/workspace/sebot-t710-competition/sebot_ros_kits/src/sebot_catering/res/location.xml` |
+| 底盘控制器 | `/dev/robot` |
+| RPLIDAR | `/dev/rplidar` |
+| Talon 机械臂 | `/dev/talon` |
+| 取件视觉相机 | `/dev/deepCamera` |
+| 机械臂 RGB 相机 | `/dev/rgbCamera` |
 
-如果部署目录不是 `/root/workspace/sebot-t710-competition`，需要同步修改相关源码或建立对应路径。
+部分路径仍保留比赛现场部署环境配置，迁移到其他设备时需要根据实际环境修改。
 
-## 运行参数
+---
 
-`sebot_factory.launch` 中的主参数：
+## 📌 项目特点
 
-| 参数 | 作用 |
-| --- | --- |
-| `delayStart` | 启动延时，等待其它 ROS 节点启动 |
-| `timeoutNavi` | 导航超时重发目标的时间 |
-| `simulation` | STDR 仿真模式开关 |
-| `pidPoseKp` / `pidPoseKi` / `pidPoseKd` | 方向 PID |
-| `pidDisKp` / `pidDisKi` / `pidDisKd` | 距离 PID |
-| `pidLocalKp` / `pidLocalKi` / `pidLocalKd` | 图像横向位置 PID |
-| `pidClawXKp` / `pidClawXKi` / `pidClawXKd` | 机械爪 X 方向 PID |
-| `pidClawYKp` / `pidClawYKi` / `pidClawYKd` | 机械爪 Y 方向 PID |
-| `disClaw` | 机械爪夹取距离 |
-| `disPick` | 机械臂抓取/放置距离 |
-| `disSearch` | AI 搜索距离 |
-| `disOrder` | 订单确认距离 |
-| `debug` | OpenCV 调试窗口开关 |
-| `score` | AI 检测置信度阈值 |
+本项目不是单一算法 Demo，而是一套完整的真实机器人任务工程。
 
-## 技术栈
+它将：
 
-- Ubuntu
-- ROS 1
-- catkin
-- C++14
-- Python 3
-- OpenCV
-- OpenCV ArUco
-- PaddlePaddle EdgeBoard `ppnc`
-- ONNX Runtime C++ API
-- `libserial`
-- RPLIDAR
-- `robot_pose_ekf`
-- `gmapping`
-- `hector_mapping`
-- `amcl`
-- `move_base`
-- MoveIt
-- STDR Simulator
+```text
+SLAM
++
+Navigation
++
+Computer Vision
++
+AI Inference
++
+Robot Control
++
+Manipulator Control
++
+Task State Machine
+```
 
-## 参赛任务覆盖
+集成到同一个 ROS 系统中，实现服务机器人从环境感知到最终物料配送的完整自主闭环。
 
-本项目源码覆盖以下比赛能力：
+---
 
-- 自主探索建图
-- 地图保存与复用
-- AMCL 重定位
-- 工作台、取件台、结算区导航
-- 工作台订单识别
-- 零件识别与订单排序
-- 取件台零件搜索
-- 机械臂伸展、夹取、收缩和放置
-- 基于 ArUco/颜色区域的机械爪视觉对准
-- 配送完成后的物料清单展示
-- 任务语音播报
+## ⚠️ 说明
 
-## 参考资料
+本仓库主要用于：
 
-README 写法参考：
+- 机器人竞赛项目展示
+- ROS 服务机器人学习
+- SLAM / Navigation 实践
+- 视觉识别与机械操作研究
+- 智能服务机器人任务流程复现
 
-- [GitHub Docs: About READMEs](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-readmes)
-- [Google Style Guides: READMEs](https://google.github.io/styleguide/docguide/READMEs.html)
-- [Standard Readme](https://github.com/RichardLitt/standard-readme)
-- [README Best Practices](https://github.com/jehna/readme-best-practices)
-- [Awesome README Examples](https://github.com/sway3406/awesome-readme-examples)
-
+部分设备驱动、模型文件和路径配置依赖原比赛机器人环境，迁移到其他平台时需要重新进行设备映射、参数标定和环境配置。
 
