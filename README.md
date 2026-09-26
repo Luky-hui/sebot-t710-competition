@@ -1,4 +1,5 @@
 # 🤖 SEBOT T710 智能服务机器人系统
+基于 ROS 1 与 SEBOT T710 实机平台的自主探索建图、订单识别、零件抓取与配送一体化项目。
 
 <p align="left">
   <img src="https://img.shields.io/badge/ROS-1-22314E?logo=ros" />
