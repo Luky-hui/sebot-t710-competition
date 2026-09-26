@@ -1,7 +1,5 @@
 # 🤖 SEBOT T710 Intelligent Service Robot
 
-> 面向 2026 第二十八届中国机器人及人工智能大赛（CRAIC）百度智能云智能服务机器人赛的 ROS 1 自主服务机器人系统，实现自主探索建图、定位导航、订单识别、零件识别、机械臂抓取配送与最终物料清单展示。
-
 <p align="left">
   <img src="https://img.shields.io/badge/ROS-1-22314E?logo=ros" />
   <img src="https://img.shields.io/badge/C++-14-00599C?logo=cplusplus" />
